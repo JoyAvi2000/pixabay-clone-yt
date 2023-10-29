@@ -1,65 +1,76 @@
-import {defineField, defineType} from 'sanity'
+import { defineField, defineType } from "sanity";
 
 export default defineType({
-  name: 'post',
-  title: 'Post',
-  type: 'document',
-  fields: [
-    defineField({
-      name: 'title',
-      title: 'Title',
-      type: 'string',
-    }),
-    defineField({
-      name: 'slug',
-      title: 'Slug',
-      type: 'slug',
-      options: {
-        source: 'title',
-        maxLength: 96,
-      },
-    }),
-    defineField({
-      name: 'author',
-      title: 'Author',
-      type: 'reference',
-      to: {type: 'author'},
-    }),
-    defineField({
-      name: 'mainImage',
-      title: 'Main image',
-      type: 'image',
-      options: {
-        hotspot: true,
-      },
-    }),
-    defineField({
-      name: 'categories',
-      title: 'Categories',
-      type: 'array',
-      of: [{type: 'reference', to: {type: 'category'}}],
-    }),
-    defineField({
-      name: 'publishedAt',
-      title: 'Published at',
-      type: 'datetime',
-    }),
-    defineField({
-      name: 'body',
-      title: 'Body',
-      type: 'blockContent',
-    }),
-  ],
-
-  preview: {
-    select: {
-      title: 'title',
-      author: 'author.name',
-      media: 'mainImage',
-    },
-    prepare(selection) {
-      const {author} = selection
-      return {...selection, subtitle: author && `by ${author}`}
-    },
-  },
-})
+     name: "post",
+     title: "Post",
+     type: "document",
+     fields: [
+          defineField({
+               name: "title",
+               title: "Title",
+               type: "string",
+          }),
+          defineField({
+               name: "keywords",
+               title: "Tags",
+               type: "array",
+               of: [{ type: "string" }],
+          }),
+          defineField({
+               name: "description",
+               title: "Description",
+               type: "string",
+          }),
+          defineField({
+               name: "filesource",
+               title: "Filetype",
+               type: "string",
+               options: {
+                    list: [
+                         { title: "Image", value: "image" },
+                         { title: "Others", value: "others" },
+                    ],
+                    layout: "radio",
+                    direction: "horizontal",
+               },
+          }),
+          defineField({
+               name: "mainImage",
+               title: "Main Image",
+               type: "image",
+               options: {
+                    hotspot: true,
+               },
+               hidden: ({ parent }) => parent?.filesource !== "image",
+          }),
+          defineField({
+               name: "otherMedia",
+               title: "Other Media",
+               type: "file",
+               hidden: ({ parent }) => parent?.filesource !== "others",
+          }),
+          defineField({
+               name: "categories",
+               title: "Categories",
+               type: "string",
+          }),
+          defineField({
+               name: "users",
+               title: "Users",
+               type: "reference",
+               to: { type: "users" },
+          }),
+          defineField({
+               name: "comments",
+               title: "Comments",
+               type: "array",
+               of: [{ type: "reference", to: [{ type: "comments" }] }],
+          }),
+          defineField({
+               name: "collections",
+               title: "Collections",
+               type: "array",
+               of: [{ type: "reference", to: [{ type: "users" }] }],
+          }),
+     ],
+});
